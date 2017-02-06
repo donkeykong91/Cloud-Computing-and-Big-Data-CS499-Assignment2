@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>User.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Myapplication</a> &gt; <a href="index.source.html" class="el_package">com.mycompany.myapp.domain</a> &gt; <span class="el_source">User.java</span></div><h1>User.java</h1><pre class="source lang-java linenums">package com.mycompany.myapp.domain;
+
+import com.mycompany.myapp.config.Constants;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.validator.constraints.Email;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.time.ZonedDateTime;
+
+/**
+ * A user.
+ */
+@Entity
+@Table(name = &quot;jhi_user&quot;)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+<span class="fc" id="L26">public class User extends AbstractAuditingEntity implements Serializable {</span>
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @NotNull
+    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Size(min = 1, max = 50)
+    @Column(length = 50, unique = true, nullable = false)
+    private String login;
+
+    @JsonIgnore
+    @NotNull
+    @Size(min = 60, max = 60)
+    @Column(name = &quot;password_hash&quot;,length = 60)
+    private String password;
+
+    @Size(max = 50)
+    @Column(name = &quot;first_name&quot;, length = 50)
+    private String firstName;
+
+    @Size(max = 50)
+    @Column(name = &quot;last_name&quot;, length = 50)
+    private String lastName;
+
+    @Email
+    @Size(max = 100)
+    @Column(length = 100, unique = true)
+    private String email;
+
+<span class="fc" id="L59">    @NotNull</span>
+    @Column(nullable = false)
+    private boolean activated = false;
+
+    @Size(min = 2, max = 5)
+    @Column(name = &quot;lang_key&quot;, length = 5)
+    private String langKey;
+
+    @Size(max = 20)
+    @Column(name = &quot;activation_key&quot;, length = 20)
+    @JsonIgnore
+    private String activationKey;
+
+    @Size(max = 20)
+    @Column(name = &quot;reset_key&quot;, length = 20)
+    private String resetKey;
+
+<span class="fc" id="L76">    @Column(name = &quot;reset_date&quot;, nullable = true)</span>
+    private ZonedDateTime resetDate = null;
+
+<span class="fc" id="L79">    @JsonIgnore</span>
+    @ManyToMany
+    @JoinTable(
+        name = &quot;jhi_user_authority&quot;,
+        joinColumns = {@JoinColumn(name = &quot;user_id&quot;, referencedColumnName = &quot;id&quot;)},
+        inverseJoinColumns = {@JoinColumn(name = &quot;authority_name&quot;, referencedColumnName = &quot;name&quot;)})
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set&lt;Authority&gt; authorities = new HashSet&lt;&gt;();
+
+<span class="fc" id="L88">    @JsonIgnore</span>
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = &quot;user&quot;)
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set&lt;PersistentToken&gt; persistentTokens = new HashSet&lt;&gt;();
+
+    public Long getId() {
+<span class="fc" id="L94">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="nc" id="L98">        this.id = id;</span>
+<span class="nc" id="L99">    }</span>
+
+    public String getLogin() {
+<span class="fc" id="L102">        return login;</span>
+    }
+
+    //Lowercase the login before saving it in database
+    public void setLogin(String login) {
+<span class="fc" id="L107">        this.login = login.toLowerCase(Locale.ENGLISH);</span>
+<span class="fc" id="L108">    }</span>
+
+    public String getPassword() {
+<span class="fc" id="L111">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="fc" id="L115">        this.password = password;</span>
+<span class="fc" id="L116">    }</span>
+
+    public String getFirstName() {
+<span class="fc" id="L119">        return firstName;</span>
+    }
+
+    public void setFirstName(String firstName) {
+<span class="fc" id="L123">        this.firstName = firstName;</span>
+<span class="fc" id="L124">    }</span>
+
+    public String getLastName() {
+<span class="fc" id="L127">        return lastName;</span>
+    }
+
+    public void setLastName(String lastName) {
+<span class="fc" id="L131">        this.lastName = lastName;</span>
+<span class="fc" id="L132">    }</span>
+
+    public String getEmail() {
+<span class="fc" id="L135">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="fc" id="L139">        this.email = email;</span>
+<span class="fc" id="L140">    }</span>
+
+    public boolean getActivated() {
+<span class="fc" id="L143">        return activated;</span>
+    }
+
+    public void setActivated(boolean activated) {
+<span class="fc" id="L147">        this.activated = activated;</span>
+<span class="fc" id="L148">    }</span>
+
+    public String getActivationKey() {
+<span class="nc" id="L151">        return activationKey;</span>
+    }
+
+    public void setActivationKey(String activationKey) {
+<span class="fc" id="L155">        this.activationKey = activationKey;</span>
+<span class="fc" id="L156">    }</span>
+
+    public String getResetKey() {
+<span class="fc" id="L159">        return resetKey;</span>
+    }
+
+    public void setResetKey(String resetKey) {
+<span class="fc" id="L163">        this.resetKey = resetKey;</span>
+<span class="fc" id="L164">    }</span>
+
+    public ZonedDateTime getResetDate() {
+<span class="fc" id="L167">       return resetDate;</span>
+    }
+
+    public void setResetDate(ZonedDateTime resetDate) {
+<span class="fc" id="L171">       this.resetDate = resetDate;</span>
+<span class="fc" id="L172">    }</span>
+
+    public String getLangKey() {
+<span class="fc" id="L175">        return langKey;</span>
+    }
+
+    public void setLangKey(String langKey) {
+<span class="fc" id="L179">        this.langKey = langKey;</span>
+<span class="fc" id="L180">    }</span>
+
+    public Set&lt;Authority&gt; getAuthorities() {
+<span class="fc" id="L183">        return authorities;</span>
+    }
+
+    public void setAuthorities(Set&lt;Authority&gt; authorities) {
+<span class="fc" id="L187">        this.authorities = authorities;</span>
+<span class="fc" id="L188">    }</span>
+
+    public Set&lt;PersistentToken&gt; getPersistentTokens() {
+<span class="fc" id="L191">        return persistentTokens;</span>
+    }
+
+    public void setPersistentTokens(Set&lt;PersistentToken&gt; persistentTokens) {
+<span class="nc" id="L195">        this.persistentTokens = persistentTokens;</span>
+<span class="nc" id="L196">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (this == o) {</span>
+<span class="fc" id="L201">            return true;</span>
+        }
+<span class="nc bnc" id="L203" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) {</span>
+<span class="nc" id="L204">            return false;</span>
+        }
+
+<span class="nc" id="L207">        User user = (User) o;</span>
+
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (!login.equals(user.login)) {</span>
+<span class="nc" id="L210">            return false;</span>
+        }
+
+<span class="nc" id="L213">        return true;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L218">        return login.hashCode();</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L223">        return &quot;User{&quot; +</span>
+            &quot;login='&quot; + login + '\'' +
+            &quot;, firstName='&quot; + firstName + '\'' +
+            &quot;, lastName='&quot; + lastName + '\'' +
+            &quot;, email='&quot; + email + '\'' +
+            &quot;, activated='&quot; + activated + '\'' +
+            &quot;, langKey='&quot; + langKey + '\'' +
+            &quot;, activationKey='&quot; + activationKey + '\'' +
+            &quot;}&quot;;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

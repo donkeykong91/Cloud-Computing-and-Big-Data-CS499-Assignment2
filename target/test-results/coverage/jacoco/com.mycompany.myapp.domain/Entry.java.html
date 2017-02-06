@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Entry.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Myapplication</a> &gt; <a href="index.source.html" class="el_package">com.mycompany.myapp.domain</a> &gt; <span class="el_source">Entry.java</span></div><h1>Entry.java</h1><pre class="source lang-java linenums">package com.mycompany.myapp.domain;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.io.Serializable;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Objects;
+
+/**
+ * A Entry.
+ */
+@Entity
+@Table(name = &quot;entry&quot;)
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+<span class="fc" id="L20">public class Entry implements Serializable {</span>
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @NotNull
+    @Column(name = &quot;title&quot;, nullable = false)
+    private String title;
+
+    @NotNull
+    @Lob
+    @Column(name = &quot;content&quot;, nullable = false)
+    private String content;
+
+    @NotNull
+    @Column(name = &quot;date&quot;, nullable = false)
+    private ZonedDateTime date;
+
+    @ManyToOne
+    private Blog blog;
+
+<span class="fc" id="L44">    @ManyToMany</span>
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @JoinTable(name = &quot;entry_tag&quot;,
+               joinColumns = @JoinColumn(name=&quot;entries_id&quot;, referencedColumnName=&quot;ID&quot;),
+               inverseJoinColumns = @JoinColumn(name=&quot;tags_id&quot;, referencedColumnName=&quot;ID&quot;))
+    private Set&lt;Tag&gt; tags = new HashSet&lt;&gt;();
+
+    public Long getId() {
+<span class="fc" id="L52">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L56">        this.id = id;</span>
+<span class="fc" id="L57">    }</span>
+
+    public String getTitle() {
+<span class="fc" id="L60">        return title;</span>
+    }
+
+    public Entry title(String title) {
+<span class="fc" id="L64">        this.title = title;</span>
+<span class="fc" id="L65">        return this;</span>
+    }
+
+    public void setTitle(String title) {
+<span class="fc" id="L69">        this.title = title;</span>
+<span class="fc" id="L70">    }</span>
+
+    public String getContent() {
+<span class="fc" id="L73">        return content;</span>
+    }
+
+    public Entry content(String content) {
+<span class="fc" id="L77">        this.content = content;</span>
+<span class="fc" id="L78">        return this;</span>
+    }
+
+    public void setContent(String content) {
+<span class="fc" id="L82">        this.content = content;</span>
+<span class="fc" id="L83">    }</span>
+
+    public ZonedDateTime getDate() {
+<span class="fc" id="L86">        return date;</span>
+    }
+
+    public Entry date(ZonedDateTime date) {
+<span class="fc" id="L90">        this.date = date;</span>
+<span class="fc" id="L91">        return this;</span>
+    }
+
+    public void setDate(ZonedDateTime date) {
+<span class="fc" id="L95">        this.date = date;</span>
+<span class="fc" id="L96">    }</span>
+
+    public Blog getBlog() {
+<span class="fc" id="L99">        return blog;</span>
+    }
+
+    public Entry blog(Blog blog) {
+<span class="nc" id="L103">        this.blog = blog;</span>
+<span class="nc" id="L104">        return this;</span>
+    }
+
+    public void setBlog(Blog blog) {
+<span class="nc" id="L108">        this.blog = blog;</span>
+<span class="nc" id="L109">    }</span>
+
+    public Set&lt;Tag&gt; getTags() {
+<span class="fc" id="L112">        return tags;</span>
+    }
+
+    public Entry tags(Set&lt;Tag&gt; tags) {
+<span class="nc" id="L116">        this.tags = tags;</span>
+<span class="nc" id="L117">        return this;</span>
+    }
+
+    public Entry addTag(Tag tag) {
+<span class="nc" id="L121">        tags.add(tag);</span>
+<span class="nc" id="L122">        tag.getEntries().add(this);</span>
+<span class="nc" id="L123">        return this;</span>
+    }
+
+    public Entry removeTag(Tag tag) {
+<span class="nc" id="L127">        tags.remove(tag);</span>
+<span class="nc" id="L128">        tag.getEntries().remove(this);</span>
+<span class="nc" id="L129">        return this;</span>
+    }
+
+    public void setTags(Set&lt;Tag&gt; tags) {
+<span class="fc" id="L133">        this.tags = tags;</span>
+<span class="fc" id="L134">    }</span>
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (this == o) {</span>
+<span class="nc" id="L139">            return true;</span>
+        }
+<span class="nc bnc" id="L141" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) {</span>
+<span class="nc" id="L142">            return false;</span>
+        }
+<span class="nc" id="L144">        Entry entry = (Entry) o;</span>
+<span class="nc bnc" id="L145" title="All 4 branches missed.">        if (entry.id == null || id == null) {</span>
+<span class="nc" id="L146">            return false;</span>
+        }
+<span class="nc" id="L148">        return Objects.equals(id, entry.id);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L153">        return Objects.hashCode(id);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L158">        return &quot;Entry{&quot; +</span>
+            &quot;id=&quot; + id +
+            &quot;, title='&quot; + title + &quot;'&quot; +
+            &quot;, content='&quot; + content + &quot;'&quot; +
+            &quot;, date='&quot; + date + &quot;'&quot; +
+            '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>

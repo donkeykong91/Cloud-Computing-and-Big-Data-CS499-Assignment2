@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpringCacheRegionFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Myapplication</a> &gt; <a href="index.source.html" class="el_package">com.mycompany.myapp.config.jcache</a> &gt; <span class="el_source">SpringCacheRegionFactory.java</span></div><h1>SpringCacheRegionFactory.java</h1><pre class="source lang-java linenums">package com.mycompany.myapp.config.jcache;
+
+import org.hibernate.boot.spi.SessionFactoryOptions;
+import org.hibernate.cache.CacheException;
+import org.hibernate.cache.jcache.JCacheRegionFactory;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
+import java.util.Properties;
+
+/**
+ * Special Hibernate region factory that will convert a Spring URI (e.g. classpath:ehcache.xml) to a real URI (e.g. file://ehcache.xml).
+ */
+<span class="nc" id="L15">public class SpringCacheRegionFactory extends JCacheRegionFactory {</span>
+
+    @Override
+    public void start(SessionFactoryOptions options, Properties properties) throws CacheException {
+        // Translate the Spring URI to a real URI
+<span class="nc" id="L20">        String uri = properties.getProperty(CONFIG_URI);</span>
+<span class="nc" id="L21">        Resource resource = new DefaultResourceLoader().getResource(uri);</span>
+        try {
+<span class="nc" id="L23">            properties.setProperty(CONFIG_URI, resource.getURI().toString());</span>
+        }
+<span class="nc" id="L25">        catch(IOException e) {</span>
+<span class="nc" id="L26">            throw new CacheException(e);</span>
+<span class="nc" id="L27">        }</span>
+<span class="nc" id="L28">        super.start(options, properties);</span>
+<span class="nc" id="L29">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.7.201606060606</span></div></body></html>
